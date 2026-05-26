@@ -9,4 +9,9 @@ sources:
       - 全国优秀大学生
       - 暑期
       - 营
-
+  - id: zju-aim
+    school: 浙江大学
+    college: 自动化与智能制造学院
+    url: http://www.som.zju.edu.cn/main.htm
+    enabled: true
+    match_mode: any
