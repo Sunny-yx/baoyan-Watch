@@ -20,6 +20,7 @@ def main() -> int:
     matched_notices: list[Notice] = []
     for source in config.sources:
         if not source.enabled:
+            print(f"Source skipped: {source.id} is disabled")
             continue
         try:
             html = fetch_html(source.url)
@@ -31,10 +32,15 @@ def main() -> int:
                 college=source.college,
                 selectors=source.selectors,
             )
-            matched_notices.extend(
+            source_matches = [
                 notice
                 for notice in notices
                 if matches_keywords(notice, source.keywords, source.match_mode)
+            ]
+            matched_notices.extend(source_matches)
+            print(
+                f"Source checked: {source.id} "
+                f"parsed={len(notices)} matched={len(source_matches)}"
             )
         except Exception as exc:
             print(f"Source failed: {source.id} {source.url} ({exc})", file=sys.stderr)
@@ -43,7 +49,14 @@ def main() -> int:
     write_report(new_notices, args.report)
 
     if new_notices and not args.no_email:
-        send_email(new_notices)
+        if send_email(new_notices):
+            print(f"Email sent: {len(new_notices)} new notice(s)")
+        else:
+            print("Email skipped: SMTP secrets or settings are incomplete.")
+    elif not new_notices:
+        print("Email skipped: no new notices.")
+    else:
+        print("Email skipped: --no-email was set.")
 
     save_seen(seen_ids, new_notices, args.seen)
     print(f"Matched notices: {len(matched_notices)}")
@@ -63,4 +76,3 @@ def _parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
