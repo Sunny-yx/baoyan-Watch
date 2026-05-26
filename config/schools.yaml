@@ -11,7 +11,7 @@ sources:
       - 营
   - id: zju-aim
     school: 浙江大学
-    college: 自动化与智能制造学院
+    college: 管理学院
     url: http://www.som.zju.edu.cn/main.htm
     enabled: true
     match_mode: any
